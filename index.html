@@ -20,16 +20,29 @@
             line-height: 1.25;
             background-repeat: no-repeat;
             color: #000000;
+            overflow: hidden;
             margin: 0; /* 清除預設 margin */
             background-size: cover;
+        }
+
+             img {
+            max-width: 100%;
+            height: auto;
         }
 
         /* 電腦版樣式 */
         @media only screen and (min-width: 601px) {
             body {
-                background-image: url('https://i.imgur.com/2mskyjN.jpg'); /* 電腦版背景圖片 URL */
+                background-image: url('https://i.imgur.com/a31jbfl.png'); /* 電腦版背景圖片 URL */
                 padding: 20px; /* 調整電腦版 padding */
             }
+
+            h1 {
+            color: #333;
+            font-size: 50px;
+            text-align: center;
+            top: 50%;
+        }
             
             img {
                max-width: 100%;
@@ -46,7 +59,6 @@
                 #result {
                   white-space: nowrap; /* 不換行 */
         }
-        
             body {
                    font-family: 'BoutiqueBitmap9x9_Bold', sans-serif;
                    letter-spacing: 3px;
@@ -76,7 +88,7 @@
             display: block; /* 讓按鈕成為 block-level 元素，使其寬度充滿父元素 */
             margin-bottom: 10px; /* 添加底部間距 */
             position: fixed;
-            top: 90%;
+            top: 35%;
             left: 50%;
             transform: translate(-50%, -50%); /* 使按鈕居中 */
         }
@@ -119,14 +131,6 @@
             margin: 0 10px;
         }
 
-        #result {
-                maroverflow: hidden;
-                gin: 0 auto; /* 水平居中 */
-                background-size: cover;
-                background-repeat: no-repeat;
-                height: 100%;
-                min-width: 100%;
-
     }
             
     </style>
@@ -135,8 +139,8 @@
 
 <body>
  <div id="quizContainer">
-    <h1></h1>
-
+<h1></h1>
+     
   <div id="startTestButtonContainer">
         <button onclick="startTest()">開始測試</button>
     </div>
@@ -204,8 +208,9 @@
     </div>
 
   <div class="result" id="result">
-         <noscript><iframe src="https://i.imgur.com/yCzWwRy.png" height="0" width="0"
-        style="display:none;visibility:hidden"></iframe></noscript>
+         <div class="result" id="result">
+         <img id="resultImage">
+</div>
 
         </div>
 
@@ -214,9 +219,9 @@
 
     var questionBackgrounds = [
         'https://i.imgur.com/vt8GaIt.png',
-        'https://i.imgur.com/nqTrFmL.png',
+        'https://i.imgur.com/YB1nMhS.png',
         'https://i.imgur.com/Vw1t4IW.png',
-        'https://i.imgur.com/yCzWwRy.png'
+        'https://i.imgur.com/nqTrFmL.png'
     ];
 
     function hideQuizTitle() {
@@ -227,6 +232,34 @@
     function startTest() {
         hideQuizTitle();
         document.getElementById('startTestButtonContainer').style.display = 'none';
+
+        // 檢查是手機版還是電腦版
+        if (isMobile()) {
+            showMobileQuestion(1);
+        } else {
+            showDesktopQuestion(1);
+        }
+    }
+
+    // 檢測是否為手機版
+    function isMobile() {
+        return window.innerWidth <= 600; // 假設寬度小於等於 600px 為手機版
+    }
+
+    function showMobileQuestion(questionNumber) {
+    var currentQuestionElement = document.getElementById('question' + questionNumber);
+    currentQuestionElement.style.display = 'block';
+
+    // 隱藏其他問題
+    for (var i = 1; i <= 4; i++) {
+        if (i !== questionNumber) {
+            var question = document.getElementById('question' + i);
+            question.style.display = 'none';
+        }
+    }
+
+    setMobileQuestionBackground(questionNumber - 1);
+}
 
     function showDesktopQuestion(questionNumber) {
         showQuestion(questionNumber, setQuestionBackground);
@@ -243,8 +276,26 @@
                 question.style.display = 'none';
             }
         }
-
+        
         setBackgroundFunction(questionNumber - 1);
+    }
+
+    function setMobileQuestionBackground(questionIndex) {
+        // 修改為手機版的背景圖片路徑
+        var currentQuestion = 1;
+
+        var mobileBackgrounds = [
+            'https://i.imgur.com/2iZ0YUT.png',
+            'https://i.imgur.com/sBMrokV.png',
+            'https://i.imgur.com/GT43lLt.png',
+            'https://i.imgur.com/RXC9uX2.png'
+        ];
+
+        questionIndex = Math.min(Math.max(questionIndex, 0), mobileBackgrounds.length - 1);
+
+        document.body.style.backgroundImage = "url('" + mobileBackgrounds[questionIndex] + "')";
+        document.body.style.backgroundSize = "cover";
+        document.body.style.backgroundRepeat = "no-repeat";
     }
 
     function setQuestionBackground(questionIndex) {
@@ -288,6 +339,20 @@
     }
 
     function completeTest() {
+    hideQuizTitle();
+
+    // 將問題區域隱藏
+    document.getElementById('question' + currentQuestion).style.display = 'none';
+
+    // 顯示測驗結果
+    calculateScore();
+    
+    // 設置結果頁面背景為透明
+    document.getElementById('result').style.background = 'none';
+    document.getElementById('result').style.display = 'block';
+}
+
+    function completeTest() {
         hideQuizTitle();
         // 計算分數前，檢查最後一題是否有選擇答案
         var selectedAnswer = document.querySelector('input[name="q4"]:checked');
@@ -307,32 +372,25 @@
 
         function displayResult(score) {
         var resultDiv = document.getElementById('result');
-        var resultImage = document.createElement('img');
+        var resultImage = document.getElementById('resultImage');
         
         if (score > 2000 && score !== 2002 && score !== 2020 && score !== 2200) {
-            resultImage.src = 'https://i.imgur.com/w7B7RwF.jpg';
-            resultImage.alt = 'Healthy Result';
+            resultImage.src = 'https://i.imgur.com/5pQyE0E.jpg';
         } else if ([400, 1300, 310, 301, 1210, 1201, 211].includes(score)) {
-            resultImage.src = 'https://i.imgur.com/TNloFHq.jpg';
-            resultImage.alt = 'Love Result';
+            resultImage.src = 'https://i.imgur.com/TMmh3fr.jpg';
         } else if ([40, 31, 130, 1030, 121, 1021, 1120].includes(score)) {
-            resultImage.src = 'https://i.imgur.com/oEnG2wT.jpg';
-            resultImage.alt = 'Career Result';
+            resultImage.src = 'https://i.imgur.com/YN9vDPE.jpg';
         } else if ([4, 13, 103, 1003, 112, 1012, 1102].includes(score)) {
-            resultImage.src = 'https://i.imgur.com/lV1BvmE.jpg';
-            resultImage.alt = 'Wealth Result';
+            resultImage.src = 'https://i.imgur.com/ZtDOmq9.jpg';
         } else if ([2002, 2020, 2200, 220, 202, 22, 1111].includes(score)) {
-            resultImage.src = 'https://i.imgur.com/jua4LSj.jpg';
-            resultImage.alt = 'Contradiction Result';
+            resultImage.src = 'https://i.imgur.com/epv5tPX.jpg';
         }
 
-        resultImage.style.maxWidth = '100%';
-        resultImage.style.height = 'auto';
-            
         resultDiv.innerHTML = ''; // 清空結果區域的內容
         resultDiv.appendChild(resultImage); // 將圖片元素添加到結果區域
-   }
+}
+    
 </script>
 
-</body>
+ </body>
 </html>
