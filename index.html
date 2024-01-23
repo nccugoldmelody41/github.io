@@ -133,17 +133,14 @@
 
     }
 
-         .result{
-            display: none;
-            background-color: #ffffff;
-            margin: 0; 
-            background-size: auto;
-    }
-         #resultImage {
-           ax-width: 100%;
-            max-height: 100%; /* 將max-height設置為100% */
+        #resultImage {
+            max-width: 80%; /* 設置最大寬度，您可以根據需要進行調整 */
+            max-height: 80vh; /* 設置最大高度，這裡使用視窗高度的80%，您可以根據需要進行調整 */
+            width: auto;
             height: auto;
-    }
+            margin: 0 auto; /* 將圖片置中 */
+            display: block; /* 讓圖片成為 block-level 元素，使margin屬性生效 */
+}
          
             
     </style>
